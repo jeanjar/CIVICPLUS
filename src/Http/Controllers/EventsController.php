@@ -45,4 +45,9 @@ class EventsController
     {
         $data = $this->requestHandler->post();
     }
+    
+    public function show($id): void
+    {
+        echo $id;
+    }
 }

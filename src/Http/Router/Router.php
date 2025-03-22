@@ -11,7 +11,9 @@ class Router
 
     private function add(HttpMethodsEnum $method, string $path, string $controller, string $action): void
     {
-        $this->routes[$method->value][$path] = [$controller, $action];
+        $pattern = preg_replace('#\{([a-zA-Z_][a-zA-Z0-9_]*)\}#', '(?P<\1>[^/]+)', $path);
+        $pattern = "#^{$pattern}$#";
+        $this->routes[$method->value][$pattern] = [$controller, $action];
     }
 
     public function get(string $path, string $controller, string $method): void
@@ -28,14 +30,21 @@ class Router
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = $_SERVER['PATH_INFO'] ?? '/';
-        [$controller, $action] = $this->routes[$method][$path] ?? [null, null];
-        
-        if (!$controller || !$action) {
-            http_response_code(404);
-            echo '404 Not Found';
-            return;
+
+        foreach ($this->routes[$method] as $pattern => [$controller, $action]) {
+            if (preg_match($pattern, $path, $matches)) {
+                $params = array_filter(
+                    $matches,
+                    fn($key) => !is_int($key),
+                    ARRAY_FILTER_USE_KEY
+                );
+                
+                call_user_func_array([new $controller, $action], $params);
+                return;
+            }
         }
 
-        call_user_func([new $controller, $action]);
+        http_response_code(404);
+        echo '404 Not Found';
     }
 }
