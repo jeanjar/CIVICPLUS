@@ -1,0 +1,6 @@
+.navbar-brand {
+    color: #e50c0c;
+    & span {
+        color: #b3a9a9;
+    }
+}
