@@ -1,4 +1,7 @@
+## OBS this project is running under PHP ^8.4
+
 ## Steps to run the project
+
 1. Unzip or Clone the project
 2. copy `.env.example` to `.env`
 3. fill the environment variables in `.env` file
