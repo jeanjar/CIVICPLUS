@@ -1,6 +1,10 @@
 ## Steps to run the project
-1. Run `php -S localhost:8000 -t public` in the root directory of the project
-2. Open `http://localhost:8000` in your browser
+1. Unzip or Clone the project
+2. copy `.env.example` to `.env`
+3. fill the environment variables in `.env` file
+4. Run `composer install`
+5. Run `php -S localhost:8000 -t public` in the root directory of the project
+6. Open `http://localhost:8000` in your browser
 
 ---
 
