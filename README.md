@@ -1,3 +1,9 @@
+## Steps to run the project
+1. Run `php -S localhost:8000 -t public` in the root directory of the project
+2. Open `http://localhost:8000` in your browser
+
+---
+
 ## Features
 
 ### 1. List All Events
