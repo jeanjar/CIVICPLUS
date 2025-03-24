@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\CreateEventDTO;
 use App\Exceptions\CreateEventsException;
+use App\Exceptions\EventNotFoundException;
 use App\Exceptions\ListEventsException;
 use App\Exceptions\UnableToAuthenticateException;
 use GuzzleHttp\Client;
@@ -58,12 +59,22 @@ class ApiServices
      * @return array
      * @throws ListEventsException|GuzzleException
      */
-    public function listEvents(): array
+    public function listEvents($limit = 5, $offset = 0, ?string $filter = null): array
     {
+        $query = [
+            '$top' => $limit,
+            '$skip' => $offset <= 1 ? 0 : ($offset - 1) * $limit,
+        ];
+
+        if ($filter) {
+            $query['$filter'] = $filter;
+        }
+
         $response = $this->client->request('get', 'api/Events', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $_SESSION['token']
-            ]
+            ],
+            'query' => $query,
         ]);
 
         if ($response->getStatusCode() !== 200) {
@@ -95,5 +106,29 @@ class ApiServices
         }
 
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * @throws GuzzleException|EventNotFoundException
+     */
+    public function showEvent($id): array
+    {
+        try {
+            $response = $this->client->request('get', 'api/Events/' . $id, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $_SESSION['token']
+                ],
+            ]);
+
+            if ($response->getStatusCode() !== 200) {
+                error_log($response->getReasonPhrase());
+                throw new EventNotFoundException($id);
+            }
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (GuzzleException $e) {
+            error_log($e->getMessage());
+            throw new EventNotFoundException($id);
+        }
     }
 }

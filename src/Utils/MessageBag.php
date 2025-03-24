@@ -34,11 +34,6 @@ class MessageBag
         return $this->hasMessages() ? $_SESSION['message_bag'] : [];
     }
 
-    public function getByType($type): array
-    {
-        return $this->hasMessages($type) ? $_SESSION['message_bag'][$type] : [];
-    }
-
     public function hasMessages(?string $type = null): bool
     {
         return $type ? !!count($_SESSION['message_bag'][$type] ?? []) : !!count($_SESSION['message_bag'] ?? []);

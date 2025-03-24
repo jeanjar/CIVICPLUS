@@ -17,7 +17,7 @@ class CreateEventDTO
     ) {
     }
 
-    public function validate()
+    public function validate(): void
     {
         try {
             $startDate = new DateTime($this->startDate);

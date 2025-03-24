@@ -23,4 +23,17 @@ class Engine
     {
         return '<div class="alert alert-' . $type . '">' . $message . '</div>';
     }
+    
+    public static function pagination($total, $limit, $page, $url, $pageQueryName = 'page'): string
+    {
+        $pages = ceil($total / $limit);
+        $html = '<nav><ul class="pagination">';
+        $html .= '<li class="page-item"><a class="page-link" href="' . $url . '?' . $pageQueryName .'=1">First</a></li>';
+        for ($i = 1; $i <= $pages; $i++) {
+            $html .= '<li class="page-item"><a class="page-link" href="' . $url . '?' . $pageQueryName . '=' . $i . '">' . $i . '</a></li>';
+        }
+        $html .= '<li class="page-item"><a class="page-link" href="' . $url . '?' . $pageQueryName . '=' .$pages . '">Last</a></li>';
+        $html .= '</ul></nav>';
+        return $html;
+    }
 }

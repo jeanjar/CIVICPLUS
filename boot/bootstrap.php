@@ -24,3 +24,4 @@ try {
 require_once __DIR__ . '/routes.php';
 
 App\Utils\MessageBag::getInstance()->clear();
+App\Utils\Old::getInstance()->clear();
