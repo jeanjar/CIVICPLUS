@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\CreateEventDTO;
+use App\Exceptions\CreateEventsException;
 use App\Exceptions\ListEventsException;
 use App\Http\Request\Handler;
 use App\Services\ApiServices;
 use App\Template\Engine;
+use App\URL\Builder;
+use App\Utils\MessageBag;
 use GuzzleHttp\Exception\GuzzleException;
 
 class EventsController
@@ -17,37 +21,50 @@ class EventsController
         $this->requestHandler = new Handler();
     }
 
-    public function index(): void
+    public function index(): string
     {
         $service = new ApiServices();
         try {
             $data = $service->listEvents();
         } catch (ListEventsException|GuzzleException $exception) {
             $data = ['items' => []];
-            $error = $exception->getMessage();
+            MessageBag::getInstance()->add('error', 'error', $exception->getMessage());
         }
 
-        Engine::view(
-            'events/index',
-            [
-                'data' => $data,
-                'error' => $error ?? null
-            ]
-        );
+        return Engine::view('events/index', ['data' => $data]);
     }
 
-    public function create(): void
+    public function create(): string
     {
-        Engine::view('events/create');
+        return Engine::view('events/create');
     }
-    
+
     public function store(): void
     {
-        $data = $this->requestHandler->post();
+        $data = new CreateEventDTO(...$this->requestHandler->post());
+        $data->validate();
+
+        if ($data->hasErrors()) {
+            foreach ($data->errors as $error) {
+                MessageBag::getInstance()->add('danger', 'error', $error);
+            }
+
+            Builder::redirect('events/create');
+        }
+
+        try {
+            $service = new ApiServices();
+            $service->createEvent($data);
+            MessageBag::getInstance()->add('success', 'success', 'Event created');
+            Builder::redirect('events');
+        } catch (CreateEventsException|GuzzleException $e) {
+            MessageBag::getInstance()->add('danger', 'error', $e->getMessage());
+            Builder::redirect('events/create');
+        }
     }
-    
-    public function show($id): void
+
+    public function show($id): mixed
     {
-        echo $id;
+        return $id;
     }
 }

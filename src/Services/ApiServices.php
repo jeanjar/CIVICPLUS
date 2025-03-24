@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\DTO\CreateEventDTO;
+use App\Exceptions\CreateEventsException;
 use App\Exceptions\ListEventsException;
+use App\Exceptions\UnableToAuthenticateException;
 use GuzzleHttp\Client;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -18,6 +21,11 @@ class ApiServices
         ]);
     }
 
+    /**
+     * @return void
+     * @throws GuzzleException
+     * @throws UnableToAuthenticateException
+     */
     public function authenticate(): void
     {
         if (isset($_SESSION['token'])) {
@@ -41,8 +49,8 @@ class ApiServices
                 $_SESSION['token'] = $data['access_token'];
             }
         } catch (Exception $exception) {
-            var_dump($exception);
-            die('Unable to authenticate');
+            error_log($exception->getMessage());
+            throw new UnableToAuthenticateException($exception->getMessage());
         }
     }
 
@@ -60,6 +68,30 @@ class ApiServices
 
         if ($response->getStatusCode() !== 200) {
             throw new ListEventsException($response->getReasonPhrase());
+        }
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * @param CreateEventDTO $createEventDTO
+     * @return array
+     * @throws CreateEventsException
+     * @throws GuzzleException
+     */
+    public function createEvent(CreateEventDTO $createEventDTO): array
+    {
+        $response = $this->client->request('post', 'api/Events', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $_SESSION['token']
+            ],
+            'json' => [
+                ...$createEventDTO->toArray(),
+            ],
+        ]);
+
+        if ($response->getStatusCode() !== 201) {
+            throw new CreateEventsException($response->getReasonPhrase());
         }
 
         return json_decode($response->getBody()->getContents(), true);

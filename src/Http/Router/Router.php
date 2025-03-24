@@ -26,7 +26,7 @@ class Router
         $this->add(HttpMethodsEnum::POST, $path, $controller, $method);
     }
 
-    public function dispatch(): void
+    public function dispatch(): mixed
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = $_SERVER['PATH_INFO'] ?? '/';
@@ -39,12 +39,11 @@ class Router
                     ARRAY_FILTER_USE_KEY
                 );
                 
-                call_user_func_array([new $controller, $action], $params);
-                return;
+                return call_user_func_array([new $controller, $action], $params);
             }
         }
 
         http_response_code(404);
-        echo '404 Not Found';
+        return '404 Not Found';
     }
 }

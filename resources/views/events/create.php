@@ -1,7 +1,6 @@
 <h3>Create Event</h3>
-<?= isset($error) ? App\Template\Engine::alert($error, 'danger') : '' ?>
 
-<form action="<?= App\Link\Builder::absolute('events'); ?>" method="post">
+<form action="<?= App\URL\Builder::absolute('events'); ?>" method="post">
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input type="text" class="form-control" id="title" name="title" required>
@@ -19,7 +18,7 @@
         <input type="date" class="form-control" id="endDate" name="endDate" required>
     </div>
     <div class="mb-3 d-flex justify-content-between">
-        <a href="<?= App\Link\Builder::absolute('') ?>" class="btn btn-secondary">Back</a>
+        <a href="<?= App\URL\Builder::absolute('') ?>" class="btn btn-secondary">Back</a>
         <button type="submit" class="btn btn-primary">Create</button>
     </div>
 </form>

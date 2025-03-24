@@ -11,14 +11,14 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="<?= App\Link\Builder::absolute('') ?>">CIVIC<span>PLUS</span></a>
+        <a class="navbar-brand" href="<?= App\URL\Builder::absolute('') ?>">CIVIC<span>PLUS</span></a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="<?= App\Link\Builder::absolute('') ?>">Home</a>
+                    <a class="nav-link" aria-current="page" href="<?= App\URL\Builder::absolute('') ?>">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="<?= App\Link\Builder::absolute('events/create') ?>">Create Event</a>
+                    <a class="nav-link" aria-current="page" href="<?= App\URL\Builder::absolute('events/create') ?>">Create Event</a>
                 </li>
             </ul>
         </div>
@@ -26,6 +26,13 @@
 </nav>
 
 <div class="container my-5">
+    <?php 
+    foreach (App\Utils\MessageBag::getInstance()->getAll() as $type => $messages) {
+        foreach ($messages as $key => $message) {
+            echo App\Template\Engine::alert($message, $type);
+        }
+    }
+    ?>
     <?= $content ?? '' ?>
 </div>
 
